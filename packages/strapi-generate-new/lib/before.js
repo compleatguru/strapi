@@ -84,6 +84,14 @@ module.exports = (scope, cb) => {
           connector: 'strapi-bookshelf',
           module: 'mysql'
         }
+      },
+      {
+        name: 'SQLite3',
+        value: {
+          database: 'sqlite3',
+          connector: 'strapi-bookshelf',
+          module: 'sqlite3'
+        }
       }
     ];
 
@@ -142,7 +150,7 @@ module.exports = (scope, cb) => {
                   default: _.get(scope.database, 'host', '127.0.0.1')
                 },
                 {
-                  when: !hasDatabaseConfig,
+                  when: !hasDatabaseConfig && scope.client.database != 'sqlite3',
                   type: 'input',
                   prefix: '',
                   name: 'port',
@@ -162,7 +170,7 @@ module.exports = (scope, cb) => {
                   }
                 },
                 {
-                  when: !hasDatabaseConfig,
+                  when: !hasDatabaseConfig && scope.client.database != 'sqlite3',
                   type: 'input',
                   prefix: '',
                   name: 'username',
@@ -170,7 +178,7 @@ module.exports = (scope, cb) => {
                   default: _.get(scope.database, 'username', undefined)
                 },
                 {
-                  when: !hasDatabaseConfig,
+                  when: !hasDatabaseConfig && scope.client.database != 'sqlite3',
                   type: 'password',
                   prefix: '',
                   name: 'password',
@@ -200,11 +208,15 @@ module.exports = (scope, cb) => {
                   answers = _.omit(scope.database.settings, ['client']);
                 }
 
+
                 scope.database.settings.host = answers.host;
-                scope.database.settings.port = answers.port;
                 scope.database.settings.database = answers.database;
-                scope.database.settings.username = answers.username;
-                scope.database.settings.password = answers.password;
+                if(scope.client.database != 'sqlite3'){
+                  scope.database.settings.port = answers.port;
+                  scope.database.settings.username = answers.username;
+                  scope.database.settings.password = answers.password;
+                }
+
                 scope.database.options.authenticationDatabase = answers.authenticationDatabase;
                 scope.database.options.ssl = _.toString(answers.ssl) === 'true';
 

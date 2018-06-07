@@ -16,7 +16,9 @@ module.exports = (scope, success, error) => {
     connection: Object.assign({}, scope.database.settings, {
       user: scope.database.settings.username
     })
-  });
+  },
+    useNullAsDefault: true
+  );
 
   knex.raw('select 1+1 as result').then(() => {
     logger.info('The app has been connected to the database successfully');
